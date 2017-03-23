@@ -334,7 +334,7 @@ public class PlayerAmmoCtrl : MonoBehaviour {
 
 	void CheckAmmoDamageNpc()
 	{
-		if (AmmoType == PlayerAmmoType.PuTongAmmo) {
+		if (AmmoType == PlayerAmmoType.PuTongAmmo && XkGameCtrl.GameJiTaiSt == GameJiTaiType.TanKeJiTai) {
 			return;
 		}
 		
