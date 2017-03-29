@@ -177,9 +177,9 @@ public class InputEventCtrl : MonoBehaviour {
 	ButtonState SetEnterBtSt = ButtonState.UP;
 	void Update()
 	{
-		if (SetEnterBtSt == ButtonState.DOWN && Time.time - TimeSetEnterMoveBt > 2f) {
-			HardwareCheckCtrl.OnRestartGame();
-		}
+//		if (SetEnterBtSt == ButtonState.DOWN && Time.time - TimeSetEnterMoveBt > 2f) {
+//			HardwareCheckCtrl.OnRestartGame();
+//		}
 
 		if (pcvr.bIsHardWare) {
 			return;
