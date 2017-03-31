@@ -1336,6 +1336,30 @@ public class XkGameCtrl : MonoBehaviour {
 		}
 	}
 
+	public static bool GetIsActivePlayer(PlayerEnum indexPlayer)
+	{
+		if (indexPlayer == PlayerEnum.Null) {
+			return false;
+		}
+
+		bool isActivePlayer = false;
+		switch (indexPlayer) {
+		case PlayerEnum.PlayerOne:
+			isActivePlayer = IsActivePlayerOne;
+			break;
+		case PlayerEnum.PlayerTwo:
+			isActivePlayer = IsActivePlayerTwo;
+			break;
+		case PlayerEnum.PlayerThree:
+			isActivePlayer = IsActivePlayerThree;
+			break;
+		case PlayerEnum.PlayerFour:
+			isActivePlayer = IsActivePlayerFour;
+			break;
+		}
+		return isActivePlayer;
+	}
+
 	public static void SetActivePlayerOne(bool isActive)
 	{
 		IsActivePlayerOne = isActive;

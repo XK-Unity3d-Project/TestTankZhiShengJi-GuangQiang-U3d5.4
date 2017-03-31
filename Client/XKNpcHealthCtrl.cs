@@ -69,8 +69,10 @@ public class XKNpcHealthCtrl : MonoBehaviour {
 		if (XkGameCtrl.GameJiTaiSt != GameJiTaiType.TanKeJiTai) {
 			return;
 		}
-		
+
+		bool isSetDianJiState = false;
 		if (!IsYouTongNpc) {
+			isSetDianJiState = true;
 			XkGameCtrl.GetInstance().AddPlayerKillNpc(PlayerEnum.Null, NpcJiFen);
 			XkGameCtrl.GetInstance().AddYouLiangDian(YouLiangDian, PlayerEnum.Null);
 			YouLiangDianUICtrl.GetInstance().HandleNpcYouLiangDian(YouLiangDian, transform);
@@ -78,11 +80,18 @@ public class XKNpcHealthCtrl : MonoBehaviour {
 
 		if (NpcScript != null) {
 			IsDeathNpc = true;
+			isSetDianJiState = true;
 			NpcScript.TriggerRemovePointNpc(1);
 		}
 		else if (CannonScript != null) {
 			IsDeathNpc = true;
+			isSetDianJiState = true;
 			CannonScript.OnRemoveCannon(PlayerEnum.Null, 1);
+		}
+
+		if (isSetDianJiState) {
+			XKPlayerAutoFire.SetPlayerZuoYiDianJiState(PlayerEnum.PlayerOne, 2);
+			XKPlayerAutoFire.SetPlayerZuoYiDianJiState(PlayerEnum.PlayerTwo, 2);
 		}
 		CheckHiddenNpcObjArray();
 	}

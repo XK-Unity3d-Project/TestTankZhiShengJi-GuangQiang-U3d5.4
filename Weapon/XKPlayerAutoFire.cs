@@ -10,8 +10,8 @@ public enum PlayerAmmoType
 	DaoDanAmmo,
 }
 
-public class XKPlayerAutoFire : MonoBehaviour {
-	
+public class XKPlayerAutoFire : MonoBehaviour
+{
 	public LayerMask FireLayer;
 	public Transform[] AmmoStartPosOne;
 	public Transform[] AmmoStartPosTwo;
@@ -30,6 +30,12 @@ public class XKPlayerAutoFire : MonoBehaviour {
 	[Range(0f, 1f)] public float SRPTFireVolume = 0.5f; //双人开枪音量.
 	[Range(0f, 1f)] public float DRGBFireVolume = 1f; //单人开枪音量.
 	[Range(0f, 1f)] public float SRGBFireVolume = 0.5f; //双人开枪音量.
+	/**
+	 * DianJiState == 0 -> 前气囊充气时以设置的速度运动座椅.
+	 * DianJiState == 1 -> 玩家发射高爆弹时以高于设置3个数值的速度运动座椅.
+	 * DianJiState == 2 -> 玩家撞上npc或发射导弹时以最高的速度运动座椅.
+	 */
+	public static byte[] DianJiState = new byte[2];
 	bool IsActiveFireBtOne;
 	bool IsActiveFireBtTwo;
 	float LastFireTimeOne = -1;
@@ -67,6 +73,8 @@ PlayerAudio[6] -> 主角飞机/坦克行驶音效.
 	void Start()
 	{
 		//AmmoParticleList = new List<AmmoParticleDt>(6);
+		DianJiState[0] = 0;
+		DianJiState[1] = 0;
 		FireLayer = XkGameCtrl.GetInstance().PlayerAmmoHitLayer;
 		PlayerScript = GetComponent<XkPlayerCtrl>();
 		PlayerScript.SetPlayerAutoFireScript(this);
@@ -153,6 +161,7 @@ PlayerAudio[6] -> 主角飞机/坦克行驶音效.
 				IsActiveFireBtTwo = true;
 			}
 		}
+		CheckZuoYiDianJiState();
 		CheckPlayerOneFireBt();
 		CheckPlayerTwoFireBt();
 		CheckPSTriggerAutoFire();
@@ -255,6 +264,7 @@ PlayerAudio[6] -> 主角飞机/坦克行驶音效.
 			}
 			XkGameCtrl.GetInstance().SubGaoBaoDanNumPOne();
 			obj = GetPlayerAmmo(PlayerAmmoType.GaoBaoAmmo, ammoSpawnPos, AmmoStartPosOne[0].rotation);
+//			SetPlayerZuoYiDianJiState(PlayerEnum.PlayerOne, 1);
 		}
 		obj.transform.parent = XkGameCtrl.PlayerAmmoArray;
 		PlayerAmmoCtrl ammoScript = obj.GetComponent<PlayerAmmoCtrl>();
@@ -408,6 +418,7 @@ PlayerAudio[6] -> 主角飞机/坦克行驶音效.
 			}
 			XkGameCtrl.GetInstance().SubGaoBaoDanNumPTwo();
 			obj = GetPlayerAmmo(PlayerAmmoType.GaoBaoAmmo, ammoSpawnPos, AmmoStartPosTwo[0].rotation);
+//			SetPlayerZuoYiDianJiState(PlayerEnum.PlayerTwo, 1);
 		}
 		obj.transform.parent = XkGameCtrl.PlayerAmmoArray;
 		PlayerAmmoCtrl ammoScript = obj.GetComponent<PlayerAmmoCtrl>();
@@ -811,6 +822,7 @@ PlayerAudio[6] -> 主角飞机/坦克行驶音效.
 		obj.transform.parent = XkGameCtrl.PlayerAmmoArray;
 		PlayerAmmoCtrl ammoScript = obj.GetComponent<PlayerAmmoCtrl>();
 		XkGameCtrl.GetInstance().SubDaoDanNumPOne();
+		SetPlayerZuoYiDianJiState(PlayerEnum.PlayerOne, 2);
 		
 		Vector3 mousePosInput = Input.mousePosition;
 		if (pcvr.bIsHardWare) {
@@ -930,6 +942,7 @@ PlayerAudio[6] -> 主角飞机/坦克行驶音效.
 		obj.transform.parent = XkGameCtrl.PlayerAmmoArray;
 		PlayerAmmoCtrl ammoScript = obj.GetComponent<PlayerAmmoCtrl>();
 		XkGameCtrl.GetInstance().SubDaoDanNumPTwo();
+		SetPlayerZuoYiDianJiState(PlayerEnum.PlayerTwo, 2);
 		
 		Vector3 mousePosInput = Input.mousePosition;
 		if (pcvr.bIsHardWare) {
@@ -1272,48 +1285,61 @@ PlayerAudio[6] -> 主角飞机/坦克行驶音效.
 		ammoScript.StartMoveAmmo(firePos, PlayerEnum.Null);
 	}
 
-//	Vector3 TestMousPos;
-//	Vector3 TestPcveMousPos;
-//	void OnGUI()
-//	{
-//		GUI.Box(new Rect(0f, 0f, 500f, 25f), TestMousPos.ToString());
-//		GUI.Box(new Rect(0f, 25f, 500f, 25f), TestPcveMousPos.ToString());
-//	}
-
-	/*public List<AmmoParticleDt> AmmoParticleList;
-	GameObject SpawnPlayerFireParticle(GameObject ammoParticle, Vector3 pos, Quaternion rot)
+	static void ResetGaoBaoDanDianJiState(PlayerEnum indexPlayer)
 	{
-		if (ammoParticle != null) {
-			return null;
+		int indexVal = (int)indexPlayer - 1;
+		if (DianJiState[indexVal] != 2) {
+			DianJiState[indexVal] = 0;
+		}
+	}
+
+	public static void SetPlayerZuoYiDianJiState(PlayerEnum indexPlayer, byte key)
+	{
+		int indexVal = (int)indexPlayer - 1;
+		switch (key) {
+		case 0:
+			DianJiState[indexVal] = 0;
+			pcvr.CheckMovePlayerZuoYi();
+			break;
+		case 1:
+			if (DianJiState[indexVal] != 2) {
+				DianJiState[indexVal] = 1;
+				TimeDianJiGaoBaoDan[indexVal] = Time.time;
+			}
+			break;
+		case 2:
+			TimeDianJi[indexVal] = Time.time;
+			DianJiState[indexVal] = 2;
+			break;
 		}
 
-		GameObject obj = null;
-		Transform tran = null;
-		XKFireParticleCtrl fireParticleScript = null;
-		int max = AmmoParticleList.Count;
-		for (int i = 0; i < max; i++) {
-			if (AmmoParticleList[i] != null
-			    && !AmmoParticleList[i].ParticleObj.activeSelf
-			    && AmmoParticleList[i].ParticleObj.name == ammoParticle.name) {
-				//obj = AmmoParticleList[i];
-				tran = obj.transform;
-				tran.position = pos;
-				tran.rotation = rot;
-				fireParticleScript = obj.GetComponent<XKFireParticleCtrl>();
-				if (fireParticleScript != null) {
-					fireParticleScript.OpenGunParticle();
-				}
-				break;
+		if (XkGameCtrl.GetIsActivePlayer(indexPlayer)) {
+			pcvr.GetInstance().SetZuoYiDianJiSpeed(indexPlayer, ((pcvr.ZuoYiDianJiSpeedVal[indexVal] & 0x10) == 0x10) ? -1 : 1);
+		}
+		else {
+			pcvr.GetInstance().SetZuoYiDianJiSpeed(indexPlayer, 0);
+		}
+	}
+
+	static float[] TimeDianJiGaoBaoDan = new float[2];
+	static float[] TimeDianJi = new float[2];
+	static void CheckZuoYiDianJiState()
+	{
+		if (Time.frameCount % 15 != 0) {
+			return;
+		}
+
+		PlayerEnum indexPlayer = PlayerEnum.Null;
+		for (int i = 0; i < 2; i++) {
+			if (DianJiState[i] == 2 && Time.time - TimeDianJi[i] >= 1.2f) {
+				indexPlayer = (PlayerEnum)(i+1);
+				SetPlayerZuoYiDianJiState(indexPlayer, 0);
+			}
+
+			if (DianJiState[i] == 1 && Time.time - TimeDianJiGaoBaoDan[i] >= 1.5f) {
+				indexPlayer = (PlayerEnum)(i+1);
+				SetPlayerZuoYiDianJiState(indexPlayer, 0);
 			}
 		}
-
-		if (obj == null) {
-			obj = (GameObject)Instantiate(ammoParticle, pos, rot);
-			obj.name = ammoParticle.name;
-//			if (!AmmoParticleList.Contains(obj)) {
-//				AmmoParticleList.Add(obj);
-//			}
-		}
-		return obj;
-	}*/
+	}
 }

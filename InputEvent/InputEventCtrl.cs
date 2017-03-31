@@ -57,7 +57,7 @@ public class InputEventCtrl : MonoBehaviour {
 	public event EventHandel ClickSetEnterBtEvent;
 	public void ClickSetEnterBt(ButtonState val)
 	{
-		SetEnterBtSt = val;
+//		SetEnterBtSt = val;
 		if(ClickSetEnterBtEvent != null)
 		{
 			ClickSetEnterBtEvent( val );
@@ -65,7 +65,7 @@ public class InputEventCtrl : MonoBehaviour {
 
 		if (val == ButtonState.DOWN) {
 			XKGlobalData.PlayAudioSetEnter();
-			TimeSetEnterMoveBt = Time.time;
+//			TimeSetEnterMoveBt = Time.time;
 		}
 		pcvr.SetIsPlayerActivePcvr();
 	}
@@ -173,8 +173,8 @@ public class InputEventCtrl : MonoBehaviour {
 	}
 	#endregion
 	
-	float TimeSetEnterMoveBt;
-	ButtonState SetEnterBtSt = ButtonState.UP;
+//	float TimeSetEnterMoveBt;
+//	ButtonState SetEnterBtSt = ButtonState.UP;
 	void Update()
 	{
 //		if (SetEnterBtSt == ButtonState.DOWN && Time.time - TimeSetEnterMoveBt > 2f) {

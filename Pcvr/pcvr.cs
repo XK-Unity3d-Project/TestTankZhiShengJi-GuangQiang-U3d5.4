@@ -13,7 +13,7 @@ using System.Collections;
 using System;
 
 public class pcvr : MonoBehaviour {
-	public static bool bIsHardWare = false;
+	public static bool bIsHardWare = true;
 	public static bool IsTestHardWareError = false;
 	public static Vector3 CrossPositionOne;
 	public static Vector3 CrossPositionTwo;
@@ -270,15 +270,23 @@ public class pcvr : MonoBehaviour {
 	byte EndRead_3 = 0x43;
 	byte EndRead_4 = 0x44;
 
-	static void CheckMovePlayerZuoYi()
+	public static void CheckMovePlayerZuoYi()
 	{
 		bool isMoveZuoYiP1 = false;
 		bool isMoveZuoYiP2 = false;
-		for (int i = 0; i < 4; i++) {
-			if (QiNangArray[i] == 1) {
+		
+		switch (GameTypeCtrl.AppTypeStatic) {
+		case AppGameType.DanJiTanKe:
+			if (QiNangArray[0] == 1 || QiNangArray[1] == 1) {
 				isMoveZuoYiP1 = true;
-				break;
-			} 
+			}
+			break;
+		case AppGameType.LianJiTanKe:
+		case AppGameType.LianJiFeiJi:
+			if (QiNangArray[0] == 1 || QiNangArray[1] == 1 || QiNangArray[4] == 1) {
+				isMoveZuoYiP1 = true;
+			}
+			break;
 		}
 
 		if (isMoveZuoYiP1) {
@@ -288,18 +296,24 @@ public class pcvr : MonoBehaviour {
 		}
 		else {
 			if (RunZuoYiState[0] == 0x00) {
-				//SetRunZuoYiState(PlayerEnum.PlayerOne, 1);
 				if (Instance != null) {
 					Instance.SetZuoYiDianJiSpeed(PlayerEnum.PlayerOne, 0);
 				}
 			}
 		}
 		
-		for (int i = 4; i < 8; i++) {
-			if (QiNangArray[i] == 1) {
+		switch (GameTypeCtrl.AppTypeStatic) {
+		case AppGameType.DanJiTanKe:
+			if (QiNangArray[4] == 1 || QiNangArray[5] == 1) {
 				isMoveZuoYiP2 = true;
-				break;
-			} 
+			}
+			break;
+		case AppGameType.LianJiTanKe:
+		case AppGameType.LianJiFeiJi:
+			if (QiNangArray[0] == 1 || QiNangArray[1] == 1 || QiNangArray[4] == 1) {
+				isMoveZuoYiP2 = true;
+			}
+			break;
 		}
 		
 		if (isMoveZuoYiP2) {
@@ -309,7 +323,6 @@ public class pcvr : MonoBehaviour {
 		}
 		else {
 			if (RunZuoYiState[1] == 0x00) {
-				//SetRunZuoYiState(PlayerEnum.PlayerTwo, 1);
 				if (Instance != null) {
 					Instance.SetZuoYiDianJiSpeed(PlayerEnum.PlayerTwo, 0);
 				}
@@ -2966,12 +2979,11 @@ QiNangArray[3]		QiNangArray[6]		QiNangArray[2]
 	}
 
 	#if TEST_SHUIQIANG_ZUOBIAO
-	static float ShuiQiangX = 0f;
-	static float ShuiQiangY = 0f;
 	void OnGUI()
 	{
-		string testA = "ShuiQiangX "+ShuiQiangX+", ShuiQiangY "+ShuiQiangY;
-		GUI.Label(new Rect(10f, 5f, Screen.width, 30f), testA);
+		string testA = "djsp1 "+ZuoYiDianJiSpeedVal[0]+", djsp2 "+ZuoYiDianJiSpeedVal[1]
+		+", djstp1 "+XKPlayerAutoFire.DianJiState[0]+", djstp2 "+XKPlayerAutoFire.DianJiState[1];
+		GUI.Label(new Rect(10f, 55f, Screen.width, 30f), testA);
 	}
 	#endif
 
@@ -3144,6 +3156,8 @@ QiNangArray[3]		QiNangArray[6]		QiNangArray[2]
 
 	/**
 	 * 座椅电机速度设置.
+	 * ZuoYiDianJiSpeedVal == 0x1x -> 电机向下运动.
+	 * ZuoYiDianJiSpeedVal == 0x0x -> 电机向上运动.
 	 */
 	public static byte[] ZuoYiDianJiSpeedVal = {0, 0, 0, 0};
 	/**
@@ -3155,9 +3169,32 @@ QiNangArray[3]		QiNangArray[6]		QiNangArray[2]
 	{
 		int indexVal = (int)indexPlayer - 1;
 		byte speedTmp = 0x00;
-		byte speed = (byte)DianJiSpeedP1;
-		if (indexPlayer == PlayerEnum.PlayerTwo) {
+		byte speed = 0x00;
+		switch (indexPlayer) {
+		case PlayerEnum.PlayerOne:
+			speed = (byte)DianJiSpeedP1;
+			break;
+		case PlayerEnum.PlayerTwo:
 			speed = (byte)DianJiSpeedP2;
+			break;
+		}
+
+		switch (XKPlayerAutoFire.DianJiState[indexVal]) {
+		case 0:
+			speed = (XkGameCtrl.GetIsActivePlayer(indexPlayer) == true && IsOpenQiNangQian == true) ? speed : (byte)0x00;
+			break;
+		case 1:
+			if (speed + 5 > 15) {
+				speed = 15;
+			}
+			else {
+				speed = (byte)(speed + 5);
+			}
+			speed = XkGameCtrl.GetIsActivePlayer(indexPlayer) == true ? speed : (byte)0x00;
+			break;
+		case 2:
+			speed = XkGameCtrl.GetIsActivePlayer(indexPlayer) == true ? (byte)15 : (byte)0x00;
+			break;
 		}
 
 		switch (moveState) {
