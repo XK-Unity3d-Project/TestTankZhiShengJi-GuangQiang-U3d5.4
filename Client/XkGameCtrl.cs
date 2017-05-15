@@ -564,7 +564,7 @@ public class XkGameCtrl : MonoBehaviour {
 				//int testYLD = 100;
 				if (IsSubPlayerYouLiangTest) {
 					//float testYL = PlayerYouLiangMax * 0.3f;
-					float testYL = 11f;
+					float testYL = 5f;
 					PlayerYouLiangCur = testYL;
 					if (IsActivePlayerOne) {
 						PlayerYouLiangCurP1 = testYL;

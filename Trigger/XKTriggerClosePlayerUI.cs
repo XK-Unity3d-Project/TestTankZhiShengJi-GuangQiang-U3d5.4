@@ -4,6 +4,10 @@ using System.Collections;
 public class XKTriggerClosePlayerUI : MonoBehaviour {
 	public AiMark FeiJiMarkCom;
 	public AiMark TanKeMarkCom;
+	/**
+	 * IsMoveEndPoint == true -> 第二关快结束时关闭UI,以防玩家提前死亡.
+	 * IsMoveEndPoint == true -> 第四关合体主角关闭UI,不去判断倒计时,以防玩家提前死亡.
+	 */
 	public bool IsMoveEndPoint;
 	public static bool IsClosePlayerUI;
 	public static bool IsActiveHeTiCloseUI;
@@ -101,7 +105,11 @@ public class XKTriggerClosePlayerUI : MonoBehaviour {
 			return;
 		}
 
-		if (IsMoveEndPoint) {
+		if (IsMoveEndPoint
+		    && FeiJiMarkCom == null
+		    && TanKeMarkCom == null) {
+			//第四关合体主角时FeiJiMarkCom与TanKeMarkCom不为NULL.
+			//第二关快结束游戏时,eiJiMarkCom与TanKeMarkCom必须为NULL.关闭UI.
 			CheckIsMoveEndPoint();
 			return;
 		}
