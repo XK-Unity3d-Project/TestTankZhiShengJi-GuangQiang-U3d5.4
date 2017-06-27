@@ -67,9 +67,17 @@ public class ZhunXingCtrl : MonoBehaviour {
 			case PlayerEnum.PlayerOne:
 				mousePosInput = pcvr.CrossPositionOne;
 				break;
-				
+			
 			case PlayerEnum.PlayerTwo:
 				mousePosInput = pcvr.CrossPositionTwo;
+				break;
+			
+			case PlayerEnum.PlayerThree:
+				mousePosInput = pcvr.CrossPositionThree;
+				break;
+			
+			case PlayerEnum.PlayerFour:
+				mousePosInput = pcvr.CrossPositionFour;
 				break;
 			}
 		}

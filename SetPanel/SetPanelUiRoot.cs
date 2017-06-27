@@ -254,6 +254,18 @@ public class SetPanelUiRoot : MonoBehaviour
 		if (SetBtSt == ButtonState.DOWN && Time.time - TimeSetMoveBt > 1f && Time.frameCount % 200 == 0) {
 			MoveStarImg();
 		}
+		
+		if (Input.GetKeyUp(KeyCode.G)) {
+				if (SpriteAdjustGunCross.enabled)
+				{
+						CSampleGrabberCB.GetInstance().ActiveJiaoZhunZuoBiao();
+				}
+		}
+		
+		if (IsJiaoZhunLaser) {
+				IsJiaoZhunLaser = false;
+				HanldeClickFireBtEvent();
+		}
 	}
 
 	void ClickSetEnterBtEvent(ButtonState val)
@@ -314,7 +326,7 @@ public class SetPanelUiRoot : MonoBehaviour
 		if (dtEnum != SelectSetGameDt.GunAdjustP1) {
 			return;
 		}
-		HanldeClickFireBtEvent();
+//		HanldeClickFireBtEvent();
 	}
 
 	void ClickFireBtTwoEvent(ButtonState val)
@@ -328,7 +340,7 @@ public class SetPanelUiRoot : MonoBehaviour
 		if (dtEnum != SelectSetGameDt.GunAdjustP2) {
 			return;
 		}
-		HanldeClickFireBtEvent();
+//		HanldeClickFireBtEvent();
 	}
 
 	void ClickStartBtEventP1(ButtonState val)
@@ -345,7 +357,7 @@ public class SetPanelUiRoot : MonoBehaviour
 	{
 		SelectSetGameDt dtEnum = (SelectSetGameDt) StarMoveCount;
 		if (dtEnum == SelectSetGameDt.GunAdjustP1) {
-			HanldeClickFireBtEvent();
+//			HanldeClickFireBtEvent();
 		}
 	}
 
@@ -363,7 +375,7 @@ public class SetPanelUiRoot : MonoBehaviour
 	{
 		SelectSetGameDt dtEnum = (SelectSetGameDt) StarMoveCount;
 		if (dtEnum == SelectSetGameDt.GunAdjustP2) {
-			HanldeClickFireBtEvent();
+//			HanldeClickFireBtEvent();
 		}
 	}
 
@@ -713,11 +725,20 @@ public class SetPanelUiRoot : MonoBehaviour
 		}
 	}
 
+	/**
+	 * 更新校准图片信息.
+	 */
 	void HanldeClickFireBtEvent()
 	{
 		if (GunAdjustObj.activeSelf) {
 			CloseAllJiaoYanPanel();
 		}
+	}
+
+	static bool IsJiaoZhunLaser;
+	public static void HandleJiaoZhunLaser()
+	{
+				IsJiaoZhunLaser = true;
 	}
 
 	void InitAdjustGunCross()
@@ -731,14 +752,14 @@ public class SetPanelUiRoot : MonoBehaviour
 		string jiaoZhunCross = "GunJY_";
 		int index = (int)AdjustGunDrossSt;
 		//jiaoZhunCross = "FangXiangJY_";
-		switch (MyCOMDevice.PcvrGameSt) {
-		case PcvrComState.TanKeFangXiangZhenDong:
-			jiaoZhunCross = "FangXiangJY_";
-			break;
-		case PcvrComState.TanKeGunZhenDong:
-			jiaoZhunCross = "GunJY_";
-			break;
-		}
+//		switch (MyCOMDevice.PcvrGameSt) {
+//		case PcvrComState.TanKeFangXiangZhenDong:
+//			jiaoZhunCross = "FangXiangJY_";
+//			break;
+//		case PcvrComState.TanKeGunZhenDong:
+//			jiaoZhunCross = "GunJY_";
+//			break;
+//		}
 		SpriteAdjustGunCross.spriteName = jiaoZhunCross + index.ToString();
 	}
 

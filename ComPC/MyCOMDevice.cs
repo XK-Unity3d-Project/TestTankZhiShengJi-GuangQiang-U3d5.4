@@ -34,7 +34,7 @@ public class MyCOMDevice : MonoBehaviour
 		static SerialPort _SerialPort;
 		public static int BufLenRead = 39;
 		public static int BufLenReadEnd = 4;
-		public static  int BufLenWrite = 32;
+		public static  int BufLenWrite = 10;
 		public static byte[] ReadByteMsg = new byte[BufLenRead];
 		public static byte[] WriteByteMsg = new byte[BufLenWrite];
 		static string RxStringData;
@@ -65,7 +65,7 @@ public class MyCOMDevice : MonoBehaviour
 				return;
 			}
 
-			_SerialPort = new SerialPort(ComPortName, 38400, Parity.None, 8, StopBits.One);
+			_SerialPort = new SerialPort(ComPortName, 115200, Parity.None, 8, StopBits.One);
 			_SerialPort.NewLine = _NewLine;
 			_SerialPort.Encoding = Encoding.GetEncoding("iso-8859-1");
 			_SerialPort.ReadTimeout = ReadTimeout;
@@ -111,34 +111,38 @@ public class MyCOMDevice : MonoBehaviour
 					continue;
 				}*/
 
-				IsTestWRPer = false;
-				if (IsReadMsgComTimeOut) {
-					CloseComPort();
-					break;
-				}
+//				IsTestWRPer = false;
+//				if (IsReadMsgComTimeOut) {
+//					CloseComPort();
+//					break;
+//				}
 
-				if (IsStopComTX) {
-					IsReadComMsg = false;
-					Thread.Sleep(1000);
-					continue;
-				}
-
+//				if (IsStopComTX) {
+//					IsReadComMsg = false;
+//					Thread.Sleep(1000);
+//					continue;
+//				}
+				
+//				if (ZhunXingCtrl.GetInstanceOne() != null && ZhunXingCtrl.GetInstanceOne().GetActiveZhunXing()) {
+//						ZhunXingCtrl.GetInstanceOne().FixedUpdateGunCross();
+//				}
 				COMTxData();
-				if (pcvr.IsJiaoYanHid || !pcvr.IsPlayerActivePcvr) {
-					Thread.Sleep(100);
-				}
-				else {
-					Thread.Sleep(25);
-				}
+				Thread.Sleep(1);
+//				if (pcvr.IsJiaoYanHid || !pcvr.IsPlayerActivePcvr) {
+//					Thread.Sleep(100);
+//				}
+//				else {
+//					Thread.Sleep(25);
+//				}
 
-				COMRxData();
-				if (pcvr.IsJiaoYanHid || !pcvr.IsPlayerActivePcvr) {
-					Thread.Sleep(100);
-				}
-				else {
-					Thread.Sleep(25);
-				}
-				IsTestWRPer = true;
+//				COMRxData();
+//				if (pcvr.IsJiaoYanHid || !pcvr.IsPlayerActivePcvr) {
+//					Thread.Sleep(100);
+//				}
+//				else {
+//					Thread.Sleep(25);
+//				}
+//				IsTestWRPer = true;
 			}
 			while (_SerialPort.IsOpen);
 			CloseComPort();
@@ -153,6 +157,9 @@ public class MyCOMDevice : MonoBehaviour
 
 			try
 			{
+				if (XKLaserPosCtrl.GetInstance() != null) {
+						XKLaserPosCtrl.GetInstance().SendMessage();
+				}
 				IsReadComMsg = false;
 				_SerialPort.Write(WriteByteMsg, 0, WriteByteMsg.Length);
 				_SerialPort.DiscardOutBuffer();
@@ -307,8 +314,8 @@ public class MyCOMDevice : MonoBehaviour
 		RestartComPort();
 	}
 
-	void Update()
-	{
+//	void Update()
+//	{
 		//test...
 //		if (Input.GetKeyUp(KeyCode.T)) {
 //			ForceRestartComPort();
@@ -318,21 +325,21 @@ public class MyCOMDevice : MonoBehaviour
 //		}
 		//test end...
 		
-		if (!pcvr.bIsHardWare || XkGameCtrl.IsLoadingLevel || ComThreadClass.IsReadComMsg) {
-			return;
-		}
+//		if (!pcvr.bIsHardWare || XkGameCtrl.IsLoadingLevel || ComThreadClass.IsReadComMsg) {
+//			return;
+//		}
+//
+//		if (GameTypeCtrl.AppTypeStatic == AppGameType.LianJiServer) {
+//			return;
+//		}
+//
+//		if (Time.realtimeSinceStartup - TimeLastVal < TimeUnitDelta) {
+//			return;
+//		}
+//		TimeLastVal = Time.realtimeSinceStartup;
 
-		if (GameTypeCtrl.AppTypeStatic == AppGameType.LianJiServer) {
-			return;
-		}
-
-		if (Time.realtimeSinceStartup - TimeLastVal < TimeUnitDelta) {
-			return;
-		}
-		TimeLastVal = Time.realtimeSinceStartup;
-
-		CheckTimeOutReadMsg();
-	}
+//		CheckTimeOutReadMsg();
+//	}
 
 //	void OnGUI()
 //	{

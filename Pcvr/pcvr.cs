@@ -3,6 +3,7 @@
 /**
  * 当该属性COM_TANK_TEST打开后,用来在台儿庄机台上测试坦克游戏.
  */
+
 #define COM_FEIJI_TX
 /**
  * COM_FEIJI_TX该属性用来打开飞机机台的硬件通讯逻辑.
@@ -11,12 +12,16 @@
 using UnityEngine;
 using System.Collections;
 using System;
+using System.Drawing;
+
 
 public class pcvr : MonoBehaviour {
 	public static bool bIsHardWare = true;
 	public static bool IsTestHardWareError = false;
 	public static Vector3 CrossPositionOne;
 	public static Vector3 CrossPositionTwo;
+	public static Vector3 CrossPositionThree;
+	public static Vector3 CrossPositionFour;
 	public static bool IsJiaoYanHid;
 	int HID_BUF_LEN_WRITE = 0;
 	
@@ -156,6 +161,8 @@ public class pcvr : MonoBehaviour {
 				TestComPort.GetInstance();
 			}
 			NetworkServerNet.GetInstance();
+			XKOpenCGCamera.GetInstance();
+			XKLaserPosCtrl.GetInstance();
 		}
 		return Instance;
 	}
@@ -170,16 +177,16 @@ public class pcvr : MonoBehaviour {
 		#endif
 
 		Debug.Log("MyCOMDevice.PcvrComSt "+MyCOMDevice.PcvrComSt);
-		switch (MyCOMDevice.PcvrComSt) {
-		case PcvrComState.TanKeFangXiangZhenDong:
-			MyCOMDevice.ComThreadClass.BufLenRead = 39;
-			MyCOMDevice.ComThreadClass.BufLenWrite = 32;
-			break;
-		case PcvrComState.TanKeGunZhenDong:
-			MyCOMDevice.ComThreadClass.BufLenRead = 27;
-			MyCOMDevice.ComThreadClass.BufLenWrite = 23;
-			break;
-		}
+//		switch (MyCOMDevice.PcvrComSt) {
+//		case PcvrComState.TanKeFangXiangZhenDong:
+//			MyCOMDevice.ComThreadClass.BufLenRead = 39;
+//			MyCOMDevice.ComThreadClass.BufLenWrite = 32;
+//			break;
+//		case PcvrComState.TanKeGunZhenDong:
+//			MyCOMDevice.ComThreadClass.BufLenRead = 27;
+//			MyCOMDevice.ComThreadClass.BufLenWrite = 23;
+//			break;
+//		}
 
 		if (Application.loadedLevel == (int)GameLevel.Movie) {
 			AudioManager.Instance.SetParentTran(transform);
@@ -204,60 +211,60 @@ public class pcvr : MonoBehaviour {
 		InitCrossPosInfoPTwo();
 	}
 
-	void Update()
-	{
-		#if TEST_SHUIQIANG_ZUOBIAO
-		if (Input.GetKeyUp(KeyCode.X)) {
-			if (ShuiQiangX >= 5f) {
-				ShuiQiangX = 0f;
-			}
-			else {
-				ShuiQiangX += 1f;
-			}
-		}
-
-		if (Input.GetKeyUp(KeyCode.Y)) {
-			if (ShuiQiangY >= 5f) {
-				ShuiQiangY = 0f;
-			}
-			else {
-				ShuiQiangY += 1f;
-			}
-		}
-		#endif
-
-		if (GameTypeCtrl.AppTypeStatic == AppGameType.LianJiServer) {
-			return;
-		}
-		CheckCrossPositionPOne();
-		CheckCrossPositionPTwo();
-		CheckIsPlayerActivePcvr();
-	}
+//	void Update()
+//	{
+//		#if TEST_SHUIQIANG_ZUOBIAO
+//		if (Input.GetKeyUp(KeyCode.X)) {
+//			if (ShuiQiangX >= 5f) {
+//				ShuiQiangX = 0f;
+//			}
+//			else {
+//				ShuiQiangX += 1f;
+//			}
+//		}
+//
+//		if (Input.GetKeyUp(KeyCode.Y)) {
+//			if (ShuiQiangY >= 5f) {
+//				ShuiQiangY = 0f;
+//			}
+//			else {
+//				ShuiQiangY += 1f;
+//			}
+//		}
+//		#endif
+//
+//		if (GameTypeCtrl.AppTypeStatic == AppGameType.LianJiServer) {
+//			return;
+//		}
+//		CheckCrossPositionPOne();
+//		CheckCrossPositionPTwo();
+//		CheckIsPlayerActivePcvr();
+//	}
 
 	// Update is called once per frame
-	void FixedUpdate()
-	{
-		if (GameTypeCtrl.AppTypeStatic == AppGameType.LianJiServer) {
-			return;
-		}
-		CheckCrossPositionPOne();
-		CheckCrossPositionPTwo();
-
-		if (!bIsHardWare || XkGameCtrl.IsLoadingLevel) {
-			return;
-		}
+//	void FixedUpdate()
+//	{
+//		if (GameTypeCtrl.AppTypeStatic == AppGameType.LianJiServer) {
+//			return;
+//		}
+//		CheckCrossPositionPOne();
+//		CheckCrossPositionPTwo();
+//
+//		if (!bIsHardWare || XkGameCtrl.IsLoadingLevel) {
+//			return;
+//		}
+//		
+//		float dTime = Time.realtimeSinceStartup - lastUpTime;
+//		if (IsJiaoYanHid) {
+//			if (dTime < 0.1f) {
+//				return;
+//			}
+//		}
+//		lastUpTime = Time.realtimeSinceStartup;
 		
-		float dTime = Time.realtimeSinceStartup - lastUpTime;
-		if (IsJiaoYanHid) {
-			if (dTime < 0.1f) {
-				return;
-			}
-		}
-		lastUpTime = Time.realtimeSinceStartup;
-		
-		GetMessage();
-		SendMessage();
-	}
+//		GetMessage();
+//		SendMessage();
+//	}
 
 //	static byte ReadHead_1 = 0x01;
 //	static byte ReadHead_2 = 0x55;
@@ -2257,7 +2264,7 @@ QiNangArray[3]		QiNangArray[6]		QiNangArray[2]
 		}
 	}
 	
-	public static bool IsGetValByKey = false;
+	public static bool IsGetValByKey = true;
 	public static float GetPcvrTaBanVal()
 	{
 		if (bIsHardWare && openPCVRFlag == 0) {
@@ -3442,6 +3449,30 @@ QiNangArray[3]		QiNangArray[6]		QiNangArray[2]
 		}
 		IsPlayerActivePcvr = true;
 		TimeLastActivePcvr = Time.realtimeSinceStartup;
+	}
+
+	public static void UpdatePcvrCrossPos(byte indexVal, Point pos)
+	{
+			PlayerEnum indexPlayer = PlayerEnum.Null;
+			indexPlayer = (PlayerEnum)(indexVal + 1);
+			Vector3 posCross = new Vector3(pos.X, pos.Y, 0f);
+			switch (indexPlayer) {
+			case PlayerEnum.PlayerOne:
+					CrossPositionOne = posCross;
+					break;
+
+			case PlayerEnum.PlayerTwo:
+					CrossPositionTwo = posCross;
+					break;
+
+			case PlayerEnum.PlayerThree:
+					CrossPositionThree = posCross;
+					break;
+
+			case PlayerEnum.PlayerFour:
+					CrossPositionFour = posCross;
+					break;
+			}
 	}
 }
 

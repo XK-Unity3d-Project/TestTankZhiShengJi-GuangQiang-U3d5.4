@@ -173,6 +173,7 @@ public class InputEventCtrl : MonoBehaviour {
 	}
 	#endregion
 	
+	float TimeFireBt;
 //	float TimeSetEnterMoveBt;
 //	ButtonState SetEnterBtSt = ButtonState.UP;
 	void Update()
@@ -181,7 +182,7 @@ public class InputEventCtrl : MonoBehaviour {
 //			HardwareCheckCtrl.OnRestartGame();
 //		}
 
-		if (pcvr.bIsHardWare) {
+		if (pcvr.bIsHardWare && !pcvr.IsGetValByKey) {
 			return;
 		}
 
@@ -242,14 +243,14 @@ public class InputEventCtrl : MonoBehaviour {
 		}
 
 		//Fire button
-		if(Input.GetKeyUp(KeyCode.Mouse0))
-		{
-			IsClickFireBtOneDown = false;
-			ClickFireBtOne( ButtonState.UP );
-
-			IsClickFireBtTwoDown = false;
-			ClickFireBtTwo( ButtonState.UP );
-		}
+//		if(Input.GetKeyUp(KeyCode.Mouse0))
+//		{
+//			IsClickFireBtOneDown = false;
+//			ClickFireBtOne( ButtonState.UP );
+//
+//			IsClickFireBtTwoDown = false;
+//			ClickFireBtTwo( ButtonState.UP );
+//		}
 		
 		if(Input.GetKeyDown(KeyCode.Mouse0))
 		{

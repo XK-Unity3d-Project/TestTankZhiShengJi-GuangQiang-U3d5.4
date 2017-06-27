@@ -41,14 +41,14 @@ QiNangStateFJ[3] -> 右气囊
 	// Update is called once per frame
 	void Update()
 	{
-		if (pcvr.DongGanState == 0) {
-			return;
-		}
+//		if (pcvr.DongGanState == 0) {
+//			return;
+//		}
 		
 		if (DaoJiShiCtrl.GetInstance().GetIsPlayDaoJishi()
 		    || (!XkGameCtrl.IsActivePlayerOne && !XkGameCtrl.IsActivePlayerTwo)) {
-			pcvr.CloseQiNangQian();
-			pcvr.CloseQiNangHou();
+//			pcvr.CloseQiNangQian();
+//			pcvr.CloseQiNangHou();
 			return;
 		}
 
